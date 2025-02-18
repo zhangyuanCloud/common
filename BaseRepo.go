@@ -1,6 +1,7 @@
 package common
 
 import (
+	"github.com/beego/beego/v2/client/orm"
 	"github.com/sirupsen/logrus"
 )
 

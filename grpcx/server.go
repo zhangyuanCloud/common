@@ -7,7 +7,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/soheilhy/cmux"
 	"github.com/valyala/fasthttp"
-	"gitlab.novgate.com/common/common/logger"
+	"github.com/zhangyuanCloud/common/logger"
 	"google.golang.org/grpc"
 	"net"
 	"net/http"
