@@ -58,7 +58,10 @@ func InitMysql(config *MysqlConfig) error {
 	dbPort := config.Port
 	//字符集
 	dbCharset := config.Charset
-
+	err := orm.RegisterDriver("mysql", orm.DRMySQL)
+	if err != nil {
+		return err
+	}
 	path := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=%s&loc=Local", dbUser, dbPwd, dbHost, dbPort, dbName, dbCharset)
 	logger.LOG.Debugf("数据库链接：%s \n", path)
 	if err := orm.RegisterDataBase(dbAlias, dbType, path); err != nil {
