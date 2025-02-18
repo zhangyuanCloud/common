@@ -88,9 +88,15 @@ func (req *BaseTimeRequest) DiffDays() int {
 }
 
 type BaseIdParam struct {
-	Id int `json:"id" form:"id" binding:"required"`
+	Id int64 `json:"id" form:"id" binding:"required"`
+}
+
+func BaseIdParamError() map[string]string {
+	return map[string]string{
+		"Id.required": "主键参数不能为空",
+	}
 }
 
 type BaseIdArrParam struct {
-	Id []int `json:"id" form:"id" binding:"required"`
+	Id []int64 `json:"id" form:"id" binding:"required"`
 }
