@@ -22,6 +22,7 @@ type TableColumn struct {
 	ColumnName    string `json:"COLUMN_NAME" orm:"column(COLUMN_NAME)"`
 	DataType      string `json:"COLUMN_TYPE" orm:"column(DATA_TYPE)"`
 	ColumnComment string `json:"COLUMN_COMMENT" orm:"column(COLUMN_COMMENT)"`
+	IsNullable    string `json:"IS_NULLABLE" orm:"column(IS_NULLABLE)"`
 }
 
 type GoTpl struct {
@@ -58,25 +59,30 @@ func (t *Table) BuildModelFields(projectName string) *TemplateModel {
 		TableSchema:  t.TableSchema,
 		PkColumn:     t.ColumnName,
 		PkField:      camelString(t.ColumnName),
-		Fields:       t.buildField(),
 	}
+	tmpl.Fields, tmpl.IsTime = t.buildField()
+
 	return tmpl
 }
 
-func (t *Table) buildField() []*ModelField {
+func (t *Table) buildField() ([]*ModelField, bool) {
 
 	fields := make([]*ModelField, 0)
+	isTime := false
 	for _, column := range t.Columns {
 		isPk := column.ColumnName != t.ColumnName
+		fieldType := camelType(column.DataType)
+		isTime = fieldType == "time.Time"
 		fields = append(fields, &ModelField{
 			Name:       camelString(column.ColumnName),
-			Type:       camelType(column.DataType),
+			Type:       fieldType,
 			ColumnName: column.ColumnName,
 			IsPk:       isPk,
 			Tags:       column.buildFiledTags(isPk),
+			FormTags:   column.buildFormTags(),
 		})
 	}
-	return fields
+	return fields, isTime
 }
 
 func (c *TableColumn) buildFiledTags(isPk bool) []*Tag {
@@ -98,4 +104,28 @@ func (c *TableColumn) buildFiledTags(isPk bool) []*Tag {
 			Value: c.ColumnComment,
 		},
 	}
+}
+
+func (c *TableColumn) buildFormTags() []*Tag {
+	tags := []*Tag{
+		{
+			Name:  "form",
+			Value: camelJSONTag(c.ColumnName),
+		},
+		{
+			Name:  "json",
+			Value: camelJSONTag(c.ColumnName),
+		},
+		{
+			Name:  "comment",
+			Value: c.ColumnComment,
+		},
+	}
+	if c.IsNullable == "NO" {
+		tags = append(tags, &Tag{
+			Name:  "binding",
+			Value: "required",
+		})
+	}
+	return tags
 }

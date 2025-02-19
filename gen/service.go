@@ -232,9 +232,13 @@ func camelType(fieldType string) string {
 		key = "string"
 	case "text":
 		key = "string"
+	case "longtext":
+		key = "string"
 	case "double":
 		key = "float32"
 	case "float":
+		key = "float64"
+	case "decimal":
 		key = "float64"
 	case "date":
 		key = "time.Time"

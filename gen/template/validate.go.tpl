@@ -2,6 +2,7 @@ package validate
 
 import (
 	"github.com/zhangyuanCloud/common"
+	{{if .IsTime}} "time" {{end}}
 )
 
 type {{.ModelName}}ListForm struct {

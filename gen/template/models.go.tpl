@@ -1,6 +1,8 @@
 // 自动生成模板{{.ModelName}}
 package models
-
+import (
+    {{if .IsTime}} "time" {{end}}
+)
 
 type {{.ModelName}} struct {
       {{range .Fields}}
