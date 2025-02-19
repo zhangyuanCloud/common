@@ -258,6 +258,8 @@ func camelType(fieldType string) string {
 		key = "int"
 	case "tinyint":
 		key = "int32"
+	case "bit":
+		key = "bool"
 	default:
 		key = fieldType
 	}
