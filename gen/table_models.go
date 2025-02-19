@@ -72,7 +72,7 @@ func (t *Table) buildField() ([]*ModelField, bool) {
 	for _, column := range t.Columns {
 		isPk := column.ColumnName != t.ColumnName
 		fieldType := camelType(column.DataType)
-		isTime = fieldType == "time.Time"
+		isTime = isTime || fieldType == "time.Time"
 		fields = append(fields, &ModelField{
 			Name:       camelString(column.ColumnName),
 			Type:       fieldType,
