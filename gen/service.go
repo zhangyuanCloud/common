@@ -16,7 +16,7 @@ const (
 	PackageRepo       = "repository"
 	PackageController = "controller"
 	PackageValidate   = "validate"
-	TemplateDir       = "gen/template/"
+	TemplateDir       = "template/"
 )
 
 var tablePackages = []string{PackageModels, PackageService, PackageRepo, PackageController, PackageValidate}
@@ -24,6 +24,12 @@ var tablePackages = []string{PackageModels, PackageService, PackageRepo, Package
 var tableTplMap = map[string]*template.Template{}
 
 func init() {
+	cwd, err := os.Getwd()
+	if err != nil {
+		fmt.Println("Error getting current directory:", err)
+		return
+	}
+	fmt.Println("Current directory:", cwd)
 
 	for _, tablePackage := range tablePackages {
 		tplPath := TemplateDir + tablePackage + ".go.tpl"
