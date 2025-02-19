@@ -238,6 +238,8 @@ func camelType(fieldType string) string {
 		key = "string"
 	case "text":
 		key = "string"
+	case "mediumtext":
+		key = "string"
 	case "longtext":
 		key = "string"
 	case "double":
@@ -250,12 +252,16 @@ func camelType(fieldType string) string {
 		key = "time.Time"
 	case "datetime":
 		key = "time.Time"
+	case "time":
+		key = "time.Time"
 	case "timestamp":
 		key = "time.Time"
 	case "bigint":
 		key = "int64"
 	case "int":
 		key = "int"
+	case "integer":
+		key = "int64"
 	case "tinyint":
 		key = "int32"
 	case "bit":
