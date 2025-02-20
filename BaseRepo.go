@@ -10,9 +10,19 @@ type BaseRepo struct {
 	Log       *logrus.Entry
 }
 
-func (r *BaseRepo) InsertOne(o orm.Ormer, m interface{}) (int64, error) {
+func (r *BaseRepo) InsertOne(o orm.TxOrmer, m interface{}) (i int64, err error) {
 	if o == nil {
-		o = orm.NewOrm()
+		o, err = orm.NewOrm().Begin()
+		if err != nil {
+			return
+		}
+		defer func() {
+			if err != nil {
+				_ = o.Rollback()
+			} else {
+				_ = o.Commit()
+			}
+		}()
 	}
 	insert, err := o.Insert(m)
 	if err != nil {
@@ -21,9 +31,19 @@ func (r *BaseRepo) InsertOne(o orm.Ormer, m interface{}) (int64, error) {
 	return insert, nil
 }
 
-func (r *BaseRepo) InsertBatch(o orm.Ormer, bulk int, m interface{}) (int64, error) {
+func (r *BaseRepo) InsertBatch(o orm.TxOrmer, bulk int, m interface{}) (i int64, err error) {
 	if o == nil {
-		o = orm.NewOrm()
+		o, err = orm.NewOrm().Begin()
+		if err != nil {
+			return
+		}
+		defer func() {
+			if err != nil {
+				_ = o.Rollback()
+			} else {
+				_ = o.Commit()
+			}
+		}()
 	}
 	return o.InsertMulti(bulk, m)
 }
@@ -32,20 +52,40 @@ func (r *BaseRepo) ReadOne(m interface{}, cols ...string) error {
 	return orm.NewOrm().Read(m, cols...)
 }
 
-func (r *BaseRepo) Update(o orm.Ormer, m interface{}, cols ...string) error {
+func (r *BaseRepo) Update(o orm.TxOrmer, m interface{}, cols ...string) (err error) {
 	if o == nil {
-		o = orm.NewOrm()
+		o, err = orm.NewOrm().Begin()
+		if err != nil {
+			return
+		}
+		defer func() {
+			if err != nil {
+				_ = o.Rollback()
+			} else {
+				_ = o.Commit()
+			}
+		}()
 	}
-	_, err := o.Update(m, cols...)
+	_, err = o.Update(m, cols...)
 	if err != nil {
 		return NewMsgError(CommonDbUpdateError, err.Error())
 	}
 	return nil
 }
 
-func (r *BaseRepo) UpdateByCondition(o orm.Ormer, cond *orm.Condition, param orm.Params) (int64, error) {
+func (r *BaseRepo) UpdateByCondition(o orm.TxOrmer, cond *orm.Condition, param orm.Params) (i int64, err error) {
 	if o == nil {
-		o = orm.NewOrm()
+		o, err = orm.NewOrm().Begin()
+		if err != nil {
+			return
+		}
+		defer func() {
+			if err != nil {
+				_ = o.Rollback()
+			} else {
+				_ = o.Commit()
+			}
+		}()
 	}
 	if len(param) <= 0 {
 		return 0, orm.ErrArgs
@@ -61,23 +101,43 @@ func (r *BaseRepo) UpdateByCondition(o orm.Ormer, cond *orm.Condition, param orm
 	return update, nil
 }
 
-func (r *BaseRepo) Delete(o orm.Ormer, m interface{}, cols ...string) error {
+func (r *BaseRepo) Delete(o orm.TxOrmer, m interface{}, cols ...string) (err error) {
 	if o == nil {
-		o = orm.NewOrm()
+		o, err = orm.NewOrm().Begin()
+		if err != nil {
+			return
+		}
+		defer func() {
+			if err != nil {
+				_ = o.Rollback()
+			} else {
+				_ = o.Commit()
+			}
+		}()
 	}
-	_, err := o.Delete(m, cols...)
-	return err
+	_, err = o.Delete(m, cols...)
+	return
 }
 
-func (r *BaseRepo) DeleteByCondition(o orm.Ormer, cond *orm.Condition) error {
+func (r *BaseRepo) DeleteByCondition(o orm.TxOrmer, cond *orm.Condition) (err error) {
 	if cond.IsEmpty() {
 		return orm.ErrArgs
 	}
 	if o == nil {
-		o = orm.NewOrm()
+		o, err = orm.NewOrm().Begin()
+		if err != nil {
+			return
+		}
+		defer func() {
+			if err != nil {
+				_ = o.Rollback()
+			} else {
+				_ = o.Commit()
+			}
+		}()
 	}
-	_, err := o.QueryTable(r.TableName).SetCond(cond).Delete()
-	return err
+	_, err = o.QueryTable(r.TableName).SetCond(cond).Delete()
+	return
 }
 
 func (r *BaseRepo) Count(cond *orm.Condition) int64 {
