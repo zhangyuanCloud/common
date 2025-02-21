@@ -5,6 +5,11 @@ type TypeOption struct {
 	TypeName string `json:"typeName"`
 }
 
+type SelectOption struct {
+	Type     string `json:"type"`
+	TypeName string `json:"typeName"`
+}
+
 type SelectTree struct {
 	Id       int           `json:"id"`
 	Label    string        `json:"label"`
