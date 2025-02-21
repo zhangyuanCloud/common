@@ -4,23 +4,23 @@ type Error interface {
 	error
 	ErrorCode() int
 }
-type errors struct {
+type Errors struct {
 	Code int    `json:"code"`
 	Msg  string `json:"msg"`
 }
 
-func (err *errors) ErrorCode() int {
+func (err *Errors) ErrorCode() int {
 	return err.Code
 }
-func (err *errors) Error() string {
+func (err *Errors) Error() string {
 	return err.Msg
 }
 
 func NewError(code int) Error {
-	return &errors{code, CodeMapMessage[code]}
+	return &Errors{code, CodeMapMessage[code]}
 }
 func NewMsgError(code int, msg string) Error {
-	return &errors{code, msg}
+	return &Errors{code, msg}
 }
 
 // 错误码以20开头 模块id（第三位）+ 三位错误码

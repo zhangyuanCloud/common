@@ -36,9 +36,9 @@ func (baseController *BaseController) ReturnErrorCode(ctx *gin.Context, code int
 func (baseController *BaseController) ReturnErrorData(ctx *gin.Context, err error) {
 	returnData := new(DataResponse)
 	switch errType := err.(type) {
-	case *Error:
-		returnData.Code = errType.Code
-		returnData.Message = errType.Msg
+	case Error:
+		returnData.Code = errType.ErrorCode()
+		returnData.Message = errType.Error()
 	default:
 		returnData.Code = CommonSystemError
 		returnData.Message = CodeMapMessage[CommonSystemError] + err.Error()
@@ -81,7 +81,7 @@ func (baseController *BaseController) CheckForm(form interface{}, formError map[
 
 	if errs != nil {
 		var errInfo validator.ValidationErrors
-		var errMessage *Error
+		var errMessage Error
 		errors.As(errs, &errInfo)
 		for _, info := range errInfo {
 			errTag := info.Field() + "." + info.Tag()
