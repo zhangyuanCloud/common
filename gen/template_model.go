@@ -16,12 +16,17 @@ type TemplateModel struct {
 }
 
 func (m TemplateModel) getFile(tablePackage string) string {
-	path := "pkg/" + m.ModuleName + "/" + tablePackage
+	path := "pkg/"
+	if len(m.ModuleName) > 0 {
+		path += m.ModuleName + "/"
+	}
+	path += tablePackage
 	err := os.MkdirAll(path, os.ModePerm)
 	if err != nil {
 		return ""
 	}
-	return path + "/" + m.ModelName + tablePackage + ".go"
+	fileName := camelStr(m.ModelName, tablePackage) + ".go"
+	return path + "/" + fileName
 }
 
 type Tag struct {

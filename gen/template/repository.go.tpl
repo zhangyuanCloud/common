@@ -3,6 +3,7 @@ package repository
 import (
 	"github.com/zhangyuanCloud/common"
 	"github.com/zhangyuanCloud/common/logger"
+	"github.com/zhangyuanCloud/common/database"
 )
 
 var {{.VarFieldName}}Repo *{{.ModelName}}Repo
@@ -15,7 +16,7 @@ func New{{.ModelName}}Repo() *{{.ModelName}}Repo {
 	if {{.VarFieldName}}Repo == nil {
 		{{.VarFieldName}}Repo = &{{.ModelName}}Repo{
 			BaseRepo: common.BaseRepo{
-				TableName: "{{.TableName}}",
+				TableName: database.TableName("{{.TableName}}"),
 				Log:       logger.LOG.WithField("module", "{{.ModelName}}Repo"),
 			},
 		}

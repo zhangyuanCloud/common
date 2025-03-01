@@ -2,6 +2,7 @@
 package models
 import (
     {{if .IsTime}} "time" {{end}}
+    "github.com/zhangyuanCloud/common/database"
 )
 
 type {{.ModelName}} struct {
@@ -11,5 +12,5 @@ type {{.ModelName}} struct {
 }
 //设置表名
 func (v {{.ModelName}}) TableName() string {
-	return "{{.TableName}}"
+	return database.TableName("{{.TableName}}")
 }

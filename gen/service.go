@@ -52,25 +52,25 @@ func getInitTpl() *template.Template {
 	return tmpl
 }
 
-func GenerateProject(project string, config *database.MysqlConfig) error {
+func GenerateProject(project string, isModule bool, config *database.MysqlConfig) error {
 	err := database.InitMysql(config)
 	if err != nil {
 		return err
 	}
 
-	return GenerateTables(project, config.Name)
+	return GenerateTables(project, config.Name, config.TablePrefix, isModule)
 }
 
-func GenerateProjectTables(project string, config *database.MysqlConfig, tableName ...string) error {
+func GenerateProjectTables(project string, config *database.MysqlConfig, isModule bool, tableName ...string) error {
 	err := database.InitMysql(config)
 	if err != nil {
 		return err
 	}
 
-	return GenerateTables(project, config.Name, tableName...)
+	return GenerateTables(project, config.Name, config.TablePrefix, isModule, tableName...)
 }
 
-func GenerateTables(project, schema string, tableName ...string) error {
+func GenerateTables(project, schema, prefix string, isModule bool, tableName ...string) error {
 	tables, err := ReadTableSchema(schema, tableName...)
 	if err != nil {
 		panic(err)
@@ -82,6 +82,7 @@ func GenerateTables(project, schema string, tableName ...string) error {
 			panic(err)
 		}
 
+		table.parseTableName(prefix, isModule)
 		tplm := table.BuildModelFields(project)
 		err := BuildTableTplCode(tplm)
 		if err != nil {
@@ -160,6 +161,19 @@ func BuildTableTplCode(tplm *TemplateModel) error {
 }
 
 // 驼峰命名转换
+func camelStr(ms ...string) string {
+	if len(ms) == 0 {
+		return ""
+	}
+
+	str := make([]string, len(ms))
+	for i, m := range ms {
+		str[i] = firstUpperCase(m)
+	}
+
+	return strings.Join(str, "")
+}
+
 func camelString(ms string) string {
 	if ms == "" {
 		return ms
@@ -200,6 +214,12 @@ func convertName(fieldName string) string {
 	return upperStr
 }
 
+func firstUpperCase(str string) string {
+	if len(str) <= 0 {
+		return ""
+	}
+	return strings.ToUpper(string(str[0])) + str[1:]
+}
 func firstLowerCase(str string) string {
 	if len(str) <= 0 {
 		return ""

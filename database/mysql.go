@@ -36,11 +36,9 @@ type MysqlConfig struct {
 
 func InitMysql(config *MysqlConfig) error {
 
-	//config := config.GetDatabaseConfig()
 	if config == nil {
 		return errors.New("init database fail. can not find database config")
 	}
-	//config.DatabaseConfigGlobal = databaseConfig
 
 	//数据库类别
 	dbType := "mysql"
@@ -58,12 +56,14 @@ func InitMysql(config *MysqlConfig) error {
 	dbPort := config.Port
 	//字符集
 	dbCharset := config.Charset
-	err := orm.RegisterDriver("mysql", orm.DRMySQL)
-	if err != nil {
+
+	if err := orm.RegisterDriver("mysql", orm.DRMySQL); err != nil {
 		return err
 	}
+
 	path := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=%s&loc=Local", dbUser, dbPwd, dbHost, dbPort, dbName, dbCharset)
 	logger.LOG.Debugf("数据库链接：%s \n", path)
+
 	if err := orm.RegisterDataBase(dbAlias, dbType, path); err != nil {
 		return err
 	}
@@ -73,5 +73,13 @@ func InitMysql(config *MysqlConfig) error {
 	if config.Debug {
 		orm.Debug = true
 	}
+
+	prefix = config.TablePrefix
 	return nil
+}
+
+var prefix string
+
+func TableName(tableName string) string {
+	return prefix + tableName
 }
