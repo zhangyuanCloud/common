@@ -13,7 +13,8 @@ func Init(r *gin.RouterGroup) {
 
 func initModels() {
 	orm.RegisterModel(
-	{{range $model := .Models}}new(models.{{$model}}),{{end}}
+	{{range $model := .Models}}new(models.{{$model}}),
+	{{end}}
 	)
 }
 
